@@ -12,10 +12,12 @@ app_ui = ui.page_fluid(
     ),
 
     # Sección para seleccionar sensación térmica
-    ui.input_slider("n", "¿Cuál es tu sensación térmica?", -3, 3, 0, step=0.2),
+    ui.h3("¿Cuál es tu sensación térmica?"),
+    ui.input_slider("n", "Desliza", -3, 3, 0, step=0.2),
+    ui.output_text_verbatim("thermal_output"),  # Mostrar resultado de la sensación térmica
 
     # Sección para seleccionar actividad realizada
-    ui.h3("¿Qué actividad que has estado realizando los últimos 30 minutos?"),
+    ui.h3("¿Qué opción representa mejor la actividad que has estado realizando los últimos 30 minutos?"),
     ui.input_select(
         "select_activity",
         "Selecciona una opción:",
@@ -186,6 +188,13 @@ def server(input, output, session):
         elif 2 < voto <= 3:
             r = "mucho calor"
         return r, voto
+
+    # Mostrar la sensación térmica con el formato solicitado
+    @output
+    @render.text
+    def thermal_output():
+        r, voto = get_thermal()
+        return f"Sientes {r}, con {voto}"
 
     # Renderizar la tabla con los valores de e, met, sensación térmica y CLO
     @output
