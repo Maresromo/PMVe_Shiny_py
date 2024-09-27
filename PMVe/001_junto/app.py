@@ -13,7 +13,7 @@ app_ui = ui.page_fluid(
 
     # Sección para seleccionar sensación térmica
     ui.h3("¿Cuál es tu sensación térmica?"),
-    ui.input_slider("n", "Desliza", -3, 3, 0, step=0.2),
+    ui.input_slider("n", "Desliza (-3 mucho frío, 3 mucho calor)", -3, 3, 0, step=0.2),
     ui.output_text_verbatim("thermal_output"),  # Mostrar resultado de la sensación térmica
 
     # Sección para seleccionar actividad realizada
