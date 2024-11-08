@@ -45,9 +45,6 @@ app_ui = ui.page_fluid(
     # Sección para seleccionar vestimenta (nuevas opciones)
     ui.h3("Selecciona tu vestimenta (todas prendas que estes usando)"),
     ui.input_selectize("ropa_interior", "Ropa Interior", {     
-        "0.01": "Sostén",
-        "0.03": "Calzones cortos",
-        "0.04": "Calzones medianos",
         "0.06": "Camiseta sin mangas",
         "0.09": "Camiseta manga corta",
         }, multiple=True),
@@ -122,6 +119,7 @@ app_ui = ui.page_fluid(
         "0.10": "Pantalón corto",
         "0.50": "Pijama de mangas y pantalones largos"
     }, multiple=True),
+    ui.h3("Esta encuesta es anónima, solo recolectan los siguientes datos que fueron calculados con tus repuestas:"),
 
     # Mostrar tabla con los resultados
     ui.output_table("result_table"),
@@ -138,7 +136,7 @@ def server(input, output, session):
         return sum([float(elemento) for elemento in list(x)])
 
     def CLO():
-        a = sum([suma(input.ropa_interior()), suma(input.calcetines()), suma(input.calzado()), suma(input.camisas_blusas()), suma(input.pantalones()), suma(input.overoles()), suma(input.sacos()), suma(input.sueteres()), suma(input.vestidos_faldas()), suma(input.batas()), suma(input.pijama())])
+        a = 0.03 + sum([suma(input.ropa_interior()), suma(input.calcetines()), suma(input.calzado()), suma(input.camisas_blusas()), suma(input.pantalones()), suma(input.overoles()), suma(input.sacos()), suma(input.sueteres()), suma(input.vestidos_faldas()), suma(input.batas()), suma(input.pijama())])
         return a
 
     def get_e():
@@ -221,8 +219,27 @@ def server(input, output, session):
         enviar_datos(datos)
 
         ui.notification_show(
-            f'''Datos enviados              
-            Muchas gracias por contestar esta encuesta''',
+            f'''----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+                ----------------- Datos enviados -----------------------
+                --------------- Muchas gracias por -------------------
+                ------------- contestar esta encuesta -------------------
+                -----------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------
+            ----------------------------------------------------------------''',
             duration=200,
             )
 
