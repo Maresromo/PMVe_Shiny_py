@@ -27,8 +27,8 @@ app_ui = ui.page_fluid(
     ui.input_select("select_ac", "Selecciona una opción:", {"No": "No", "Si": "Si"}),
 
     # Sección para seleccionar sensación térmica
-    ui.h3("¿Cuál es tu sensación térmica?"),
-    ui.input_slider("n", "Desliza (-3 mucho frío, 3 mucho calor)", -3, 3, 0, step=0.2),
+    ui.h3("Justo en este momento, ¿sientes frío, neutralidad o calor?"),
+    ui.input_slider("n", "Desliza (-3 mucho frío, 0 neutralidad, 3 mucho calor)", -3, 3, 0, step=0.2),
     ui.output_text_verbatim("thermal_output"),
 
     # Sección para seleccionar actividad realizada
@@ -44,7 +44,7 @@ app_ui = ui.page_fluid(
 
     # Sección para seleccionar vestimenta (nuevas opciones)
     ui.h3("Selecciona tu vestimenta (todas prendas que estes usando)"),
-    ui.input_selectize("ropa_interior", "Ropa Interior", {     
+    ui.input_selectize("ropa_interior", "Camisa interior", {     
         "0.06": "Camiseta sin mangas",
         "0.09": "Camiseta manga corta",
         }, multiple=True),
@@ -119,7 +119,7 @@ app_ui = ui.page_fluid(
         "0.10": "Pantalón corto",
         "0.50": "Pijama de mangas y pantalones largos"
     }, multiple=True),
-    ui.h3("Esta encuesta es anónima, solo recolectan los siguientes datos que fueron calculados con tus repuestas:"),
+    ui.h3("Esta encuesta es anónima, solo se recolectan los siguientes datos que fueron calculados con tus repuestas:"),
 
     # Mostrar tabla con los resultados
     ui.output_table("result_table"),
@@ -136,7 +136,7 @@ def server(input, output, session):
         return sum([float(elemento) for elemento in list(x)])
 
     def CLO():
-        a = 0.03 + sum([suma(input.ropa_interior()), suma(input.calcetines()), suma(input.calzado()), suma(input.camisas_blusas()), suma(input.pantalones()), suma(input.overoles()), suma(input.sacos()), suma(input.sueteres()), suma(input.vestidos_faldas()), suma(input.batas()), suma(input.pijama())])
+        a = round(0.0333 + sum([suma(input.ropa_interior()), suma(input.calcetines()), suma(input.calzado()), suma(input.camisas_blusas()), suma(input.pantalones()), suma(input.overoles()), suma(input.sacos()), suma(input.sueteres()), suma(input.vestidos_faldas()), suma(input.batas()), suma(input.pijama())]),2)
         return a
 
     def get_e():
@@ -183,10 +183,10 @@ def server(input, output, session):
 
         # Crear un DataFrame con los valores calculados
         df = pd.DataFrame({
-            "clo": [clo_value],
-            "e": [e_value],
-            "met": [met_value],
-            "voto": [voto]
+            "Aislamiento térmico por la ropa": [clo_value],
+            "Usuario de aire acondicionado": [e_value],
+            "Nivel métabolico (debido a la actividad)": [met_value],
+            "Sensación térmica": [voto]
         })
 
         return df
