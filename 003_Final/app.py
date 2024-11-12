@@ -27,7 +27,7 @@ app_ui = ui.page_fluid(
     ui.input_select("select_ac", "Selecciona una opción:", {"No": "No", "Si": "Si"}),
 
     # Sección para seleccionar sensación térmica
-    ui.h3("Justo en este momento, ¿sientes frío, neutralidad o calor?"),
+    ui.h3("Justo en este momento, ¿cuál es tu sensación térmica?"),
     ui.input_slider("n", "Desliza (-3 mucho frío, 0 neutralidad, 3 mucho calor)", -3, 3, 0, step=0.2),
     ui.output_text_verbatim("thermal_output"),
 
