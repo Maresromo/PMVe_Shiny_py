@@ -1,55 +1,67 @@
-import random
 import json
+import random
 import paho.mqtt.client as mqtt
-from shiny import App, ui, reactive
+from shiny import App, reactive, render, ui
 
-# Configuración de ThingsBoard
-THINGSBOARD_HOST = 'iot.ier.unam.mx'
+# Variables de conexión MQTT
+THINGSBOARD_HOST = 'tb.ier.unam.mx'
 ACCESS_TOKEN = 'vVMGeFfW2Ar5TiFkT8oY'
 
-# Crear cliente MQTT y conectarse a ThingsBoard
-client = mqtt.Client()
-client.username_pw_set(ACCESS_TOKEN)
-client.connect(THINGSBOARD_HOST, 1883, 60)
-client.loop_start()
+# Datos iniciales
+sensor_data = {'e': 0, 'voto': 0, 'met': 0, 'clo': 0}
 
-# Definimos la interfaz de usuario (UI)
+# Función para publicar los datos a ThingsBoard
+def enviar_datos():
+    client = mqtt.Client()
+    client.username_pw_set(ACCESS_TOKEN)
+    client.connect(THINGSBOARD_HOST, 1883, 60)
+    client.loop_start()
+    
+    # Generar datos
+    e = random.randint(800, 900)
+    voto = random.randint(3000, 4000)
+    met = random.randint(4000, 5000)
+    clo = random.randint(1000, 2000)
+    
+    # Actualizar el diccionario
+    sensor_data['e'] = e
+    sensor_data['voto'] = voto
+    sensor_data['met'] = met
+    sensor_data['clo'] = clo
+    
+    # Publicar los datos
+    client.publish('v1/devices/me/telemetry', json.dumps(sensor_data), 1)
+    
+    client.loop_stop()
+    client.disconnect()
+    
+    return sensor_data
+
+# Interfaz de usuario de Shiny
 app_ui = ui.page_fluid(
-    ui.h2("Publicador de Encuesta"),
-    ui.input_numeric("input1", "Valor de 'e'", value=random.uniform(0, 10)),
-    ui.input_numeric("input2", "Valor de 'voto'", value=random.uniform(0, 10)),
-    ui.input_numeric("input3", "Valor de 'met'", value=random.uniform(0, 10)),
-    ui.input_numeric("input4", "Valor de 'clo'", value=random.uniform(0, 10)),
-    ui.input_action_button("submit_btn", "Enviar"),  # Botón para enviar
-    ui.output_text_verbatim("output")  # Área para mostrar el resultado
+    ui.input_action_button("enviar_button", "Enviar"),  # Botón para enviar datos
+    ui.output_text_verbatim("output"),  # Mostrar los datos publicados
+    ui.output_text("status_text")  # Mostrar el letrero de estado
 )
 
-# Definimos la lógica de la aplicación (Server)
+# Servidor de Shiny
 def server(input, output, session):
-
-    # Efecto reactivo que se activa cuando se presiona el botón "Enviar"
     @reactive.Effect
-    @reactive.event(input.submit_btn)
+    @reactive.event(input.enviar_button)  # Ejecuta la función cuando se presiona el botón
     def _():
-        # Obtener los valores de las entradas
-        e_value = input.input1()
-        voto_value = input.input2()
-        met_value = input.input3()
-        clo_value = input.input4()
+        datos = enviar_datos()  # Enviar los datos al pulsar el botón
+        output.output.set(f"Datos enviados: {datos}")  # Mostrar los datos en la interfaz
+        output.status_text.set("<span style='color:red;'>Datos enviados</span>")  # Mostrar letrero en color rojo
 
-        # Crear diccionario con los datos de la encuesta
-        encuesta = {
-            'e': e_value,
-            'voto': voto_value,
-            'met': met_value,
-            'clo': clo_value
-        }
+    @output
+    @render.text
+    def status_text():
+        return ""  # Inicialmente vacío
 
-        # Publicar los datos en ThingsBoard usando MQTT
-        client.publish('v1/devices/me/telemetry', json.dumps(encuesta), 1)
+    @reactive.Effect
+    @reactive.event(input.enviar_button)
+    def show_status_text():
+        output.status_text.set("<span style='color:red;'>Datos enviados</span>")  # Actualiza el letrero después de enviar
 
-        # Mostrar los datos en la app
-        output["output"].set_text(f"Datos enviados:\n{json.dumps(encuesta, indent=2)}")
-
-# Crear la aplicación Shiny
+# Crear la app de Shiny
 app = App(app_ui, server)

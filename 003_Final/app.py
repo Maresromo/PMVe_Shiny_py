@@ -43,7 +43,7 @@ app_ui = ui.page_fluid(
     }),
 
     # Sección para seleccionar vestimenta (nuevas opciones)
-    ui.h3("Selecciona tu vestimenta (todas prendas que estes usando)"),
+    ui.h3("Selecciona tu vestimenta (todas prendas que estés usando)"),
     ui.input_selectize("ropa_interior", "Camisa interior", {     
         "0.06": "Camiseta sin mangas",
         "0.09": "Camiseta manga corta",
